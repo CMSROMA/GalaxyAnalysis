@@ -777,7 +777,7 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
 
 
             #with open('OPT2'+ '_' +str(barcode)+'_output.txt','w') as f:
-            with open(str(args.array)+'_output.txt','w') as f:
+            with open(str(barcode)+'_output.txt','w') as f:
 
 
             
@@ -886,8 +886,8 @@ print ('')
 #+++++++++++++++++++++++++++++++++
 
 
-with open('OPT2'+ '_' +str(barcode)+'_output.txt','w') as f:
-#with open(str(barcode)+ '_output'+'_output.txt','w') as f:
+#with open('OPT2'+ '_' +str(barcode)+'_output.txt','w') as f:
+with open(str(barcode)+ '_output'+'_output.txt','w') as f:
 
 
 
