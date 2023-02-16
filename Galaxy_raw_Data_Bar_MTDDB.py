@@ -44,12 +44,23 @@ data = args.data
 data = data[:-2]
 info = data.split('_')
 
-args.xtalbar = barcode = info[0]
-date = info[1]
+run = info[0]
+args.xtalbar = barcode = info[1]
+
+date = info[2]
+
+tag = info[3]
+
 date = date.replace('.T','')
 data = data.replace('.T','')
+tag = tag.replace('.T','')
+
+
 print('Filename :', data)
-print('Barcode :', barcode.split('/')[1]) # this when we run it using runAll script otherwise we have to replace with print('Barcode :', barcode)
+print('Barcode :', barcode)
+print('Tag :', tag)
+print('RunNumber :', run)
+#print('Barcode :', barcode.split('/')[1]) # this when we run it using runAll script otherwise we have to replace with print('Barcode :', barcode)
 #print('Barcode :', barcode)
 print('Date in filename :', date)
 
@@ -648,8 +659,8 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	
         json_results_swap = {
-            'runName': 'Galaxy_BAR'+barcode.split('/')[1],
-            'id': barcode.split('/')[1],
+            'runName': run.split('/')[-1]+'_BAR'+barcode+str('_')+tag,
+            'id': barcode,
             #'producer': prod,
             #'geometry': geo,
             'time': date,
@@ -704,25 +715,30 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
                            'bar','bar_length','bar_length_std','type']
 
 
-
-        l_results_swap = [['Galaxy_BAR'+barcode.split('/')[1],barcode.split('/')[1],date,'','',
+        l_results_swap = [[run.split('/')[-1]+'_BAR'+barcode+str('_')+tag,barcode,date,'','',
                          '','','','','','',array_lenght_mean,array_lenght_mean_std,'','',
                          '','','','','','',width_var[12],width_var[13],'','',
                          '','','',thickness_var[12],thickness_var[13],'','','' ,'','','xtal']] 
 
-
+       #+++++++++++++++++++
+       #   SAVE csv FILE
+       #+++++++++++++++++++
           
-        with open(str(args.xtalbar)+'_swap'+'.csv', 'w') as file:    
+        #with open(str(args.xtalbar)+'_swap'+'.csv', 'w') as file:
+        with open(run+str('_BAR')+barcode+str('_')+tag+str('_swap')+'.csv','w') as file:    
             writer = csv.writer(file, delimiter=',')
             # row by row         
             writer.writerow(l_results_names_swap)
             writer.writerows(l_results_swap)
+       
+        os.system('cp '+run+str('_BAR')+barcode+str('_')+tag+'.csv /home/cmsdaq/MTDDB/uploader/files_to_upload/galaxy-bars/')
             
 	#+++++++++++++++++++
 	#  SAVE json FILE
 	#+++++++++++++++++++
 
-        with open(str(args.xtalbar)+'_swap'+'.json', 'w') as json_file:
+        #with open(str(args.xtalbar)+'_swap'+'.json', 'w') as json_file:
+        with open(run+str('_BAR')+barcode+str('_')+tag+str('_swap')+'.json', 'w') as json_file:
             json.dump(json_results_swap, json_file, indent=4) 
             
 
@@ -732,7 +748,7 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
 
 
             p = PrettyTable(['Bar',' Date&Time','Geometry'])
-            p.add_row([barcode.split('/')[1], str(timestamp),str(geo)])
+            p.add_row([barcode+str('_')+tag, str(timestamp),str(geo)])
             print(p)
             data = p.get_string()
 
@@ -742,7 +758,7 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
             print('+++++++++++++')
 
             p1 = PrettyTable(['Bar','Mean Bar Lenght along X (LE - LO)'])
-            p1.add_row([barcode.split('/')[1],str(array_lenght_mean)+ ' +/- '+ str(array_lenght_mean_std)+ ' mm'])
+            p1.add_row([barcode+str('_')+tag,str(array_lenght_mean)+ ' +/- '+ str(array_lenght_mean_std)+ ' mm'])
 
             print(p1)
             mean_lenght = p1.get_string()
@@ -753,7 +769,7 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
             print('+++++++++++++++++')
 
             p1 = PrettyTable(['Bar','Mean bar thickness along Z (FS - 0)'])
-            p1.add_row([barcode.split('/')[1],str(thickness_var[12])+ ' +/- '+ str(thickness_var[13])+ ' mm'])
+            p1.add_row([barcode+str('_')+tag,str(thickness_var[12])+ ' +/- '+ str(thickness_var[13])+ ' mm'])
 
             print(p1)
             mean_thickness_swap = p1.get_string()
@@ -764,7 +780,7 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
             print('+++++++++++++++++')
 
             p1 = PrettyTable(['Bar','Mean bar width along Y (LN - LS)'])
-            p1.add_row([barcode.split('/')[1],str(width_var[12])+ ' +/- '+ str(width_var[13])+ ' mm'])
+            p1.add_row([barcode+str('_')+tag,str(width_var[12])+ ' +/- '+ str(width_var[13])+ ' mm'])
 
             print(p1)
             mean_width_swap = p1.get_string()
@@ -776,9 +792,8 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
 	    #+++++++++++++++++++++++++++++++++
 
 
-            #with open('OPT2'+ '_' +str(barcode)+'_output.txt','w') as f:
-            with open(str(barcode)+'_output.txt','w') as f:
-
+            #with open(str(barcode)+str('_')+tag+'_output.txt','w') as f:
+            with open(run+str('_BAR')+barcode+str('_')+tag+'_output.txt','w') as f:
 
             
             
@@ -831,7 +846,7 @@ if (thickness_var[12] > 2.5 and thickness_var[12] < 3.3 ):
 from prettytable import PrettyTable
 
 p = PrettyTable(['Bar',' Date&Time','Geometry'])
-p.add_row([barcode.split('/')[1], str(timestamp),str(geo)])
+p.add_row([barcode+str('_')+tag, str(timestamp),str(geo)])
 print(p)
 data = p.get_string()
 print ('')
@@ -843,7 +858,7 @@ print('+++++++++++++')
 
 
 p1 = PrettyTable(['Bar','Mean bar lenght along X (LE - LO)'])
-p1.add_row([barcode.split('/')[1],str(array_lenght_mean)+ ' +/- '+ str(array_lenght_mean_std)+ ' mm'])
+p1.add_row([barcode+str('_')+tag,str(array_lenght_mean)+ ' +/- '+ str(array_lenght_mean_std)+ ' mm'])
 
 print(p1)
 mean_lenght = p1.get_string()
@@ -858,7 +873,7 @@ print('+++++++++++++')
 
 
 p1 = PrettyTable(['Bar','Mean bar thickness along Y (LN - LS)'])
-p1.add_row([barcode.split('/')[1],str(array_thickness_mean)+ ' +/- '+ str(array_thickness_mean_std)+ ' mm'])
+p1.add_row([barcode+str('_')+tag,str(array_thickness_mean)+ ' +/- '+ str(array_thickness_mean_std)+ ' mm'])
 
 print(p1)
 mean_thickness = p1.get_string()
@@ -874,7 +889,7 @@ print('+++++++++++++')
 
 
 p1 = PrettyTable(['Bar','Mean bar width along Z (FS - 0)'])
-p1.add_row([barcode.split('/')[1],str(array_width_mean)+ ' +/- '+ str(array_width_mean_std)+ ' mm'])
+p1.add_row([barcode+str('_')+tag,str(array_width_mean)+ ' +/- '+ str(array_width_mean_std)+ ' mm'])
 
 print(p1)
 mean_width = p1.get_string()
@@ -886,10 +901,8 @@ print ('')
 #+++++++++++++++++++++++++++++++++
 
 
-#with open('OPT2'+ '_' +str(barcode)+'_output.txt','w') as f:
-with open(str(barcode)+ '_output'+'_output.txt','w') as f:
-
-
+#with open(str(barcode)+str('_')+tag+ '_output'+'_output.txt','w') as f:
+with open(run+str('_BAR')+barcode+str('_')+tag+'_output.txt','w') as f:
 
 
     f.write(data) 
@@ -923,8 +936,8 @@ with open(str(barcode)+ '_output'+'_output.txt','w') as f:
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 json_bar = {
-    'runName': 'Galaxy_BAR'+barcode.split('/')[1],
-    'id': barcode.split('/')[1],
+    'runName': run.split('/')[-1]+'_BAR'+barcode+str('_')+tag,
+    'id': barcode,
     #'producer': prod,
     #'geometry': geo,
     'time': date,
@@ -973,8 +986,7 @@ l_results_names = ['runName','id','time','L_bar_mu','L_bar_std',
                     'bar','bar_length','bar_length_std','type']
 
 
-
-l_results = [['Galaxy_BAR'+barcode.split('/')[1],barcode.split('/')[1],date,'','',
+l_results = [[run.split('/')[-1]+'_BAR'+barcode+str('_')+tag,barcode,date,'','',
                          '','','','','','',array_lenght_mean,array_lenght_mean_std,'','',
                          '','','','','','',array_width_mean,array_width_mean_std,'','',
                          '','','',array_thickness_mean,array_thickness_mean_std,'','','' ,'','','xtal']]   
@@ -985,17 +997,20 @@ l_results = [['Galaxy_BAR'+barcode.split('/')[1],barcode.split('/')[1],date,'','
 #  SAVE .csv FILE
 #+++++++++++++++++++
 
-with open(str(args.xtalbar)+'.csv', 'w') as file:    
+#with open(str(args.xtalbar)+str('_')+tag+'.csv', 'w') as file:   
+with open(run+str('_BAR')+barcode+str('_')+tag+'.csv','w') as file: 
     writer = csv.writer(file, delimiter=',')
     # row by row         
     writer.writerow(l_results_names)
     writer.writerows(l_results)
-        
+
+os.system('cp '+run+str('_BAR')+barcode+str('_')+tag+'.csv /home/cmsdaq/MTDDB/uploader/files_to_upload/galaxy-bars/')       
 #+++++++++++++++++++
 #SAVE json FILE
 #+++++++++++++++++++
 
-with open(str(args.xtalbar)+'.json', 'w') as json_file:
+#with open(str(args.xtalbar)+str('_')+tag+'.json', 'w') as json_file:
+with open(run+str('_BAR')+barcode+str('_')+tag+'.json','w') as json_file:
     json.dump(json_bar, json_file, indent=4) 
 
     
