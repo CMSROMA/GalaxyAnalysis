@@ -45,6 +45,8 @@ for filename in os.listdir(args.inputdir):
     os.system(command)
     
 
+
+
 print('')
 print('+++++++++++++++++++++++++++')
 print('      MOVING FILES         ')
@@ -151,7 +153,7 @@ for file in files:
 
 
 
-    elif (filename.endswith('.txt')):
+    elif (filename.endswith('.txt') or filename.endswith('.pdf')):
        
 
         print('+++++++++++++++++++++++++++++++++++++++++++++')       
@@ -178,6 +180,7 @@ for file in files:
 
 
     
+
 
 
 
