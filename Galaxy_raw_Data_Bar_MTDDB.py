@@ -15,6 +15,7 @@ import datetime
 import itertools
 from datetime import datetime
 from prettytable import PrettyTable
+import timeit
 import shutil
 
 
@@ -22,6 +23,8 @@ import shutil
 #     HOW TO RUN OVER ONE SINGLE FILE
 #  python3 Galaxy_raw_Data_Bar_MTDDB.py --data BarData/1115* --bar 1115
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+start = timeit.default_timer()
 
 #+++++++++++++++++++++++++++++++++++++++++++
 #  Parsing - Date - Producers definifition
@@ -1017,6 +1020,14 @@ with open(run+str('_BAR')+barcode+str('_')+tag+'.json','w') as json_file:
     print('+++++++++++++++++++++++++++++++++++++++++++++')
     print('Type 2: thickness < width ! -> No swap needed')
     print('+++++++++++++++++++++++++++++++++++++++++++++')
+
+
+    stop = timeit.default_timer()
+
+    print('++++++++++++++++++++++++++++++')
+    print('Execution Time: ', stop - start)
+    print('++++++++++++++++++++++++++++++')
+
 
 
 
