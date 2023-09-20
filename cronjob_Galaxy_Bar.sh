@@ -37,7 +37,7 @@ for file in /data/cmsdaq/DimensionBench/Bars/BarData_tmp/*-*.TXT; do
     echo "+++++++++++++++++++++++++++++++++++++++++++++++"
 
 
-cd /data/cmsdaq/DimensionBench/Bars/
+cd /home/cmsdaq/GalaxyAnalysis/
 
 echo "++++++++++++++++++++++++++++++++++++"
 echo " Adding Run Number to raw data file"
@@ -53,7 +53,7 @@ echo "++++++++++++++++++++++++++++++"
 
 
 
-python3 runAll_Galaxy_Bar.py --inputdir BarData
+python3 runAll_Galaxy_Bar.py --inputdir /data/cmsdaq/DimensionBench/Bars/BarData
 
 #end=$(date +%s)
 

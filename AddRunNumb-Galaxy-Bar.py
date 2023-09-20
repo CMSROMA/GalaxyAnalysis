@@ -39,13 +39,13 @@ print(res)
 
 
   
-runNumberFileName='/data/cmsdaq/DimensionBench/Bars/RunNumberGalaxyBar.txt'
+runNumberFileName='RunNumberGalaxyBar.txt'
 print(runNumberFileName)
 
 
 
 
-dir = 'BarData/'
+dir = '/data/cmsdaq/DimensionBench/Bars/BarData/'
 ext = ('.TXT')
 
 

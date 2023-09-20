@@ -57,7 +57,7 @@ print('+++++++++++++++++++++++++++')
 #   Moving files in different directories
 #+++++++++++++++++++++++++++++++++++++++++++
 
-path = os.chdir("ArrayData")
+path = os.chdir("/data/cmsdaq/DimensionBench/Arrays/ArrayData")
 path = os.getcwd() 
 
 
@@ -67,10 +67,10 @@ print('=====> Raw Data directory: ',os.path.basename(path))
 res_path = os.path.join(os.getcwd(),"../ArrayData_results")
 processed_path = os.path.join(os.getcwd(),"../ArrayData_processed")
 output_path = os.path.join(os.getcwd(),"../ArrayData_output")
+plot_path = os.path.join(os.getcwd(),"../ArrayData_plot")
 
 
 print('=====> Results directory: ',os.path.basename(res_path))
-
 
 
 if not os.path.isdir(res_path):
@@ -93,7 +93,11 @@ if not os.path.isdir(output_path):
 else:
     print('=====>',os.path.basename(output_path) ,'directory already exists!')
     
-
+if not os.path.isdir(plot_path):
+    os.makedirs(plot_path)
+    print('=====> Created ArrayData_output directory: ', os.path.basename(plot_path))
+else:
+    print('=====>',os.path.basename(plot_path) ,'directory already exists!')
 
 
 files = os.listdir(path)
@@ -105,7 +109,7 @@ for file in files:
     filedest = os.path.join(res_path, file)
     filedest1 = os.path.join(processed_path, file)
     filedest2 = os.path.join(output_path, file)
-
+    filedest3 = os.path.join(plot_path, file)
 
 
     if (filename.endswith('.csv') or filename.endswith('.json')):
@@ -173,6 +177,30 @@ for file in files:
 
         shutil.move(filename, filedest2)
         print('-----> File', file ,'moved successfully to', os.path.basename(output_path) ,'directory')
+
+
+    elif (filename.endswith('.png')):
+       
+
+        print('+++++++++++++++++++++++++++++++++++++++++++++')       
+        print('-----> Processing file: ',os.path.basename(filename))
+
+
+
+        if os.path.exists(filedest3):
+            os.remove(filedest3)
+            print('-----> Removing file: ', os.path.basename(filedest3), 'from',os.path.basename(output_path),'as it exists!')
+
+
+            
+        else:
+            print('-----> Can not delete the file',os.path.basename(filedest3), "as it doesn't exist!")
+
+
+        shutil.move(filename, filedest3)
+        print('-----> File', file ,'moved successfully to', os.path.basename(plot_path) ,'directory')
+
+
 
 
 

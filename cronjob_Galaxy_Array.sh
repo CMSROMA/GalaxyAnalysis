@@ -36,7 +36,7 @@ for file in /data/cmsdaq/DimensionBench/Arrays/ArrayData_tmp/*-*.TXT; do
     echo "+++++++++++++++++++++++++++++++++++++++++++++++"
 
 
-cd /data/cmsdaq/DimensionBench/Arrays/
+cd /home/cmsdaq/GalaxyAnalysis/
 
 
 
@@ -52,7 +52,7 @@ echo " Starting LYSO Array Analysis"
 echo "++++++++++++++++++++++++++++++"
 
 
-python3 runAll_Galaxy_Array.py --inputdir ArrayData
+python3 runAll_Galaxy_Array.py --inputdir /data/cmsdaq/DimensionBench/Arrays/ArrayData/
 
 #end=$(date +%s)
 

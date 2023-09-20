@@ -36,11 +36,11 @@ print(res)
 '''
 
   
-runNumberFileName='/data/cmsdaq/DimensionBench/Arrays/RunNumberGalaxyArray.txt'
+runNumberFileName='RunNumberGalaxyArray.txt'
 
 print(runNumberFileName)
 
-dir = 'ArrayData/'
+dir = '/data/cmsdaq/DimensionBench/Arrays/ArrayData/'
 ext = ('.TXT')
 
 

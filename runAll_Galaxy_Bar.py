@@ -19,7 +19,7 @@ import os.path
 #--- Options
 
 #parser = argparse.ArgumentParser(usage="python3 runAll_Galaxy_Bar_new_clean.py --inputdir  BarData")
-parser = argparse.ArgumentParser(usage="python3 runAll_Galaxy_Bar.py --inputdir  BarData")
+parser = argparse.ArgumentParser(usage="python3 runAll_Galaxy_Bar.py --inputdir  /data/cmsdaq/DimensionBench/Bars/BarData")
 
 parser.add_argument('--inputdir',dest='inputdir',required=True)
 args = parser.parse_args()
@@ -68,7 +68,7 @@ print('+++++++++++++++++++++++++++')
 #   Moving files in different directories
 #+++++++++++++++++++++++++++++++++++++++++++
 
-path = os.chdir("BarData")
+path = os.chdir("/data/cmsdaq/DimensionBench/Bars/BarData")
 path = os.getcwd() 
 
 #print('path = Starting directory: ',path)

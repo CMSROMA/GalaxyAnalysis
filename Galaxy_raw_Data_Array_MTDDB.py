@@ -271,20 +271,15 @@ df_LE = df_LE.astype({'X': float, 'Y': float, 'Z': float})
 #        LS -> ascending X      LN -> descending X
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-print('LS inverted')
 df_LS = df_LS.reindex(['37','38','39','34','35','36','31','32','33','28','29','30','25','26','27','22','23','24',
                        '19','20','21','16','17','18','13','14','15','10','11','12','7','8','9','4','5','6',
                        '1','2','3'])
 df_LS.index = pd.RangeIndex(1,1 + len(df_LS))
 
-print(df_LS)
-
 df_LN = df_LN.reindex(['37','38','39','34','35','36','31','32','33','28','29','30','25','26','27','22','23','24',
                        '19','20','21','16','17','18','13','14','15','10','11','12','7','8','9','4','5','6',
                        '1','2','3'])
 df_LN.index = pd.RangeIndex(1,1 + len(df_LN))
-print('LN inverted')
-print(df_LN)
 
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -357,9 +352,6 @@ for point in range(1,31,3):
     y_LN = float(df_LN.loc[(29-point)]['Y']) 
 
     length1 = y_LN - y_LS
-    print('point, 29-point, y1_LS, y1_LN, l1_length')
-    print(point, 29-point, y_LS, y_LN,length1)
-
     l1_length.append(length1)    
     
 #++++++++++++++++++++++++++++++++++++++++++++++++++    
@@ -390,9 +382,6 @@ for point1 in range(2,31,3):
     length2 = y_LN - y_LS
     l2_length.append(length2)
 
-    print('point1, 31-point1, y2_LS, y2_LN, l2_length')
-    print(point1, 31-point1, y_LS, y_LN,length2)
-    
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #    This is just for length histo/plot LS vs LN
 #++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -483,20 +472,6 @@ np_length_all = np.asarray(l_length)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 np_length = np.mean(np_length_all.reshape(2, 10), axis=0) #.reshape(2, 10) --> 10 columns and 2 rows
 np_length = np_length.round(3)
-
-print('+++++++++++++++++++++')
-print('l_length:')
-print(l_length)
-print('+++++++++++++++++++++')
-print('np_length_all:')
-print(np_length_all)
-print('+++++++++++++++++++++')
-print('np_length_reshaped:')
-print(np_length_all.reshape(-1, 2))
-print('+++++++++++++++++++++')
-print('np_length:')
-print(np_length)
-print('+++++++++++++++++++++')
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #       SINGLE BARS STD
