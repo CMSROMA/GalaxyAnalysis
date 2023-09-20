@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as plt
 from matplotlib import rc
 from matplotlib.ticker import ScalarFormatter
+import matplotlib.ticker as plticker
 import pandas as pd
 from array import array
 import sys, os, argparse
@@ -55,12 +56,8 @@ args = parser.parse_args()
 data = args.data
 data = data[:-2]
 
-#info = data.split('/')[-1].split('_')
 
 info = data.split('_')
-
-#print('PIPPO',data)
-#print('PLUTO',info)
 
 
 run = info[0]
@@ -274,14 +271,20 @@ df_LE = df_LE.astype({'X': float, 'Y': float, 'Z': float})
 #        LS -> ascending X      LN -> descending X
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+print('LS inverted')
 df_LS = df_LS.reindex(['37','38','39','34','35','36','31','32','33','28','29','30','25','26','27','22','23','24',
                        '19','20','21','16','17','18','13','14','15','10','11','12','7','8','9','4','5','6',
                        '1','2','3'])
 df_LS.index = pd.RangeIndex(1,1 + len(df_LS))
+
+print(df_LS)
+
 df_LN = df_LN.reindex(['37','38','39','34','35','36','31','32','33','28','29','30','25','26','27','22','23','24',
                        '19','20','21','16','17','18','13','14','15','10','11','12','7','8','9','4','5','6',
                        '1','2','3'])
 df_LN.index = pd.RangeIndex(1,1 + len(df_LN))
+print('LN inverted')
+print(df_LN)
 
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -352,7 +355,11 @@ print('++++++++++++++++++++++++++')
 for point in range(1,31,3):
     y_LS = float(df_LS.loc[(point)]['Y'])
     y_LN = float(df_LN.loc[(29-point)]['Y']) 
+
     length1 = y_LN - y_LS
+    print('point, 29-point, y1_LS, y1_LN, l1_length')
+    print(point, 29-point, y_LS, y_LN,length1)
+
     l1_length.append(length1)    
     
 #++++++++++++++++++++++++++++++++++++++++++++++++++    
@@ -382,6 +389,9 @@ for point1 in range(2,31,3):
     y_LN = float(df_LN.loc[(31-point1)]['Y'])  
     length2 = y_LN - y_LS
     l2_length.append(length2)
+
+    print('point1, 31-point1, y2_LS, y2_LN, l2_length')
+    print(point1, 31-point1, y_LS, y_LN,length2)
     
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #    This is just for length histo/plot LS vs LN
@@ -454,64 +464,7 @@ nord = north_side
 #  Useful printout to check step by step if all is working fine: uncomment this if you want the print out 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-#print('++++++++++++++++++++++++++++++++++++')
-#print('length 1st set of points:',l1_length)
-#print('length 2nd set of points:',l2_length)
-#print('++++++++++++++++++++++++++++++++++++')
-#print('length South Side:',sud)
-#print('length North Side:',nord)
-
-##---- Compute mean value for the two points/measurements on each side (LS-LN)
-n=2
-sud = np.average(sud.reshape(-1, n), axis=1)
-nord = np.average(nord.reshape(-1, n), axis=1)
-#print('Mean South Side:',sud)
-#print('Mean North Side:',nord)
-#print('++++++++++++++++++++++++++++++++++++')
-
-'''
-#++++++++++++++++++++++++++++++++++++++++
-#   PLOT 1: LN-LS_MaxVar_10_Central_Bars
-#++++++++++++++++++++++++++++++++++++++++
-
-# Creating figure
-fig, ax1 = plt.subplots()
-plt.xlim([-0.5,12.5]) #to include first and last 3 bars
-
-#----- South Side
-color = 'tab:blue'
-ax1.set_xlabel('# Bar')
-ax1.set_ylabel('South Side length [mm]', color=color)
-ax1.plot(sud, '-',color=color,linestyle='dashed', marker='o',label='South Side')
-ax1.set_xticks(np.arange(-3,len(south_side)-6,1)) #to include first and last 3 bars
-
-ax1.tick_params(axis='y', labelcolor=color)
-
-bars = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
-
-ax1.set_xticklabels(bars)
-
-#----- North Side
-ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-ax2.yaxis.set_major_formatter(ScalarFormatter(useOffset=55))
-color = 'tab:red'
-ax2.set_ylabel('North Side length [mm]', color=color)  # we already handled the x-label with ax1
-ax2.plot(nord, '-r',color=color,linestyle='dashed', marker='o',label='North Side')
-# Adding legend
-fig.legend(loc='upper left', bbox_to_anchor=(0,1), bbox_transform=ax1.transAxes)
-#ax1.legend(loc=0)
-#ax2.legend(loc=0)
-ax1.grid()
-
-ax2.tick_params(axis='y', labelcolor=color)
-fig.tight_layout()  # otherwise the right y-label is slightly clipped
-plt.suptitle('CMS MTD' + str(args.array)+ ' - North-South Side length', y=1.02,x=0.5)
-#Adding labels
-#plt.subplots_adjust(hspace=1.5)
-plt.savefig(str(args.array)+str('_')+tag+'_LN-LS_MaxVar_10_Central_Bars.pdf',bbox_inches='tight')
-#plt.show() #uncomment this if you want display plots while running code
-'''
+# 
 #+++++++++++++++++++++++++++++++++++
 # length: Single Bars in the array
 #+++++++++++++++++++++++++++++++++++
@@ -528,8 +481,22 @@ np_length_all = np.asarray(l_length)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #       SINGLE BARS MEAN 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
-np_length = np.mean(np_length_all.reshape(-1, 2), axis=1) #.reshape(-1, 2) --> 2 columns and n rows
+np_length = np.mean(np_length_all.reshape(2, 10), axis=0) #.reshape(2, 10) --> 10 columns and 2 rows
 np_length = np_length.round(3)
+
+print('+++++++++++++++++++++')
+print('l_length:')
+print(l_length)
+print('+++++++++++++++++++++')
+print('np_length_all:')
+print(np_length_all)
+print('+++++++++++++++++++++')
+print('np_length_reshaped:')
+print(np_length_all.reshape(-1, 2))
+print('+++++++++++++++++++++')
+print('np_length:')
+print(np_length)
+print('+++++++++++++++++++++')
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #       SINGLE BARS STD
@@ -636,9 +603,16 @@ ax.set_xticklabels(bars)
 
 color = 'tab:red'
 
-x1, y1 = [-3.5, 12.5], [55., 55.]
-x2, y2 = [-3.5, 12.5], [54.98, 54.98]
-x3, y3 = [-3.5, 12.5], [55.02, 55.02]
+#-----> For Production
+x1, y1 = [-3.5, 12.5], [54.67, 54.67]
+x2, y2 = [-3.5, 12.5], [54.65, 54.65]
+x3, y3 = [-3.5, 12.5], [54.73, 54.73]
+
+#------> For MS3 and OPT
+#x1, y1 = [-3.5, 12.5], [55., 55.]
+#x2, y2 = [-3.5, 12.5], [54.98, 54.98]
+#x3, y3 = [-3.5, 12.5], [55.02, 55.02]
+
 
 
 plt.plot(x1, y1,color=color,linestyle='dashed')
@@ -730,7 +704,9 @@ print('')
 # Create some mock data for all point collected along LS and LN - 26 points on each side -
 
 sud = df_LS['Y'].to_numpy() #considering wrapping
+print('sud with wrapping: ', sud, len(sud))
 sud = np.delete(sud,(2,5,8,11,14,17,20,23,26,29,32,35,38),axis=0) #not considering wrapping
+print('sud w/o wrapping: ', sud)
 nord = df_LN['Y'].to_numpy() #considering wrapping
 nord = np.delete(nord,(2,5,8,11,14,17,20,23,26,29,32,35,38),axis=0) #not considering wrapping
 
@@ -746,33 +722,6 @@ nord = np.delete(nord,(2,5,8,11,14,17,20,23,26,29,32,35,38),axis=0) #not conside
 #print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 #print('')
 
-#------------------------------------------
-#    TEST MAX VAR excluding wrapping
-#------------------------------------------
-max_y_LS_nowr = np.amax(sud)
-min_y_LS_nowr = np.amin(sud)
-delta_y_LS_nowr = (max_y_LS - min_y_LS).round(3)
-
-max_y_LN_nowr = np.amax(nord)
-min_y_LN_nowr = np.amin(nord)
-delta_y_LN_nowr = (max_y_LN - min_y_LN).round(3)
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Mean on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-mean_y_LS_nowr = (sud.mean().round(3))
-mean_y_LN_nowr = (nord.mean().round(3))
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Spread on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-std_y_LS_nowr = (sud.std().round(3))
-std_y_LN_nowr = (nord.std().round(3))
-std_deltay_nowr = round(mt.sqrt(std_y_LS**2+std_y_LN**2),3)
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Max. array size along Y (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-array_length_max_nowr = (max_y_LN - min_y_LS).round(3)
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  Test: plot for all 26 points collected on LS and LN - w/o points for wrapping
@@ -784,7 +733,8 @@ array_length_max_nowr = (max_y_LN - min_y_LS).round(3)
 #------------------------------------------
 max_y_LS_nowr = np.amax(sud)
 min_y_LS_nowr = np.amin(sud)
-
+np.sort(sud)
+print('sud:', np.sort(sud))
 delta_y_LS_nowr = (max_y_LS_nowr - min_y_LS_nowr).round(3)
 
 max_y_LN_nowr = np.amax(nord)
@@ -792,6 +742,9 @@ min_y_LN_nowr = np.amin(nord)
 
 delta_y_LN_nowr= (max_y_LN_nowr - min_y_LN_nowr).round(3)
 
+print('HERE ARE THE LMAXVAR RESULTS')
+print('LN: ', delta_y_LN_nowr)
+print('LS: ', delta_y_LS_nowr)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #    Mean on Y on north/sud side (length)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -900,17 +853,18 @@ LN = df1_LN['Y']
 south_side.append(LS)
 north_side.append(LN)
 
-sud = np.array(south_side)
+sud = np.array(LS)
+print('Original sud', sud, len(sud))
 nord = np.array(north_side)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  Compute Mean Value for the two points/measurements on each side (LS-LN) 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+print("sud plot 3 before average: ", sud)
 n=2
 sud = np.average(sud.reshape(-1, n), axis=1)
 nord = np.average(nord.reshape(-1, n), axis=1)
-
+print('Sud after averages: ',sud)
 sud_min = np.amin(sud)
 sud_max = np.amax(sud)
 nord_min = np.amin(nord)
@@ -918,74 +872,206 @@ nord_max= np.amax(nord)
 
 nord = nord[::-1]
 
-#-------------------------------------------------------------------------------------
-# ADDITIONAL OUTPUT: uncomment this if you want the print out 
-#-------------------------------------------------------------------------------------
+sud_misalign = sud - sud.mean()
+nord_misalign = nord - nord.mean()
 
-#print('Mean South Side:',sud)
-#print('Mean North Side:',nord)
+# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# # PLOT 3 LN-LS_MaxVar_13_measured_points:  New plot upon Paolo's request  - FOR VENDORS - (mean of 26 points w/o wrapping)
+# #                 VERSION WITH DIFFERENT Y AXES RANGE FOR LN AND LS
+# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+# fig, ax1 = plt.subplots()
 
-'''
+# #++++++++++++++++++++++++
+# #    South Side
+# #++++++++++++++++++++++++
+# sud_misalign = np.append(sud_misalign, [np.nan,np.nan,np.nan])
+# sud_x_index = np.arange(0,16,1)
+
+# color = 'tab:blue'
+
+# ax1.set_xlabel('# Bar')
+# ax1.set_ylabel('South Side [mm]', color=color)
+# ax1.plot(sud_x_index, sud_misalign, color=color,linestyle='dashed', marker='o')
+# loc = plticker.MultipleLocator(base=1.0) # this locator puts ticks at regular intervals
+# ax1.xaxis.set_major_locator(loc)
+# ax1.tick_params(axis='y', labelcolor=color)
+# ax1.grid()
+
+# # points = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14']
+# # ax1.set_xticklabels(points)
+# #++++++++++++++++++++++++
+# #    North Side
+# #++++++++++++++++++++++++
+
+# nord_x_index = np.arange(3,16,1)
+# ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+# # ax2.invert_xaxis() # to invert x axis on LNax2.set_xticks(np.arange(-3,len(sud),1)) #to include first and last 3 bars
+# # # ax2.set_xticks(np.arange(-3,len(sud),1)) #to include first and last 3 bars
+
+# color = 'tab:red'
+# ax2.set_ylabel('North Side [mm]', color=color)  # we already handled the x-label with ax1
+# ax2.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='North Side')
+
+# # Adding legend
+# fig.legend(loc='upper left', bbox_to_anchor=(0.03,0.15), bbox_transform=ax1.transAxes)
+# ax2.tick_params(axis='y', labelcolor=color)
+# fig.tight_layout()  # otherwise the right y-label is slightly clipped
+# plt.suptitle('CMS MTD' + str(args.array) + ' - North-South Side Misalignment', y=1.02,x=0.5)
+
+# #Adding labels
+# #plt.subplots_adjust(hspace=1.5)
+# plt.savefig(str(args.array)+str('_')+tag+'_LN-LS_MaxVar_13_measured_points.pdf',bbox_inches='tight')
+# #plt.show() #uncomment this if you want display plots while running code
+
+# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# # PLOT 4 LN-LS_MaxVar_13_measured_points:  Same as plot 3 but only 10 central bars
+# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# fig, ax1 = plt.subplots()
+
+# #++++++++++++++++++++++++
+# #    South Side
+# #++++++++++++++++++++++++
+# sud_misalign = np.delete(sud_misalign, [0,1,2,13,14,15], None)
+# sud_x_index = np.arange(3,13,1)
+
+# color = 'tab:blue'
+# ax1.set_xlabel('# Bar')
+# ax1.set_ylabel('South Side mis-alignment [mm]', color=color)
+# ax1.plot(sud_x_index, sud_misalign, color=color,linestyle='dashed', marker='o')
+# loc = plticker.MultipleLocator(base=1.0) # this locator puts ticks at regular intervals
+# ax1.xaxis.set_major_locator(loc)
+# ax1.tick_params(axis='y', labelcolor=color)
+# ax1.grid()
+
+# #++++++++++++++++++++++++
+# #    North Side
+# #++++++++++++++++++++++++
+# nord_misalign = np.delete(nord_misalign, [10,11,12], None)
+# nord_x_index = np.arange(3,13,1)
+# ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+# color = 'tab:red'
+# ax2.set_ylabel('North Side mis-alignment [mm]', color=color)  # we already handled the x-label with ax1
+# ax2.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='North Side')
+
+# # Adding legend
+# fig.legend(loc='upper left', bbox_to_anchor=(0.03,0.15), bbox_transform=ax1.transAxes)
+# ax2.tick_params(axis='y', labelcolor=color)
+# fig.tight_layout()  # otherwise the right y-label is slightly clipped
+# plt.suptitle('CMS MTD' + str(args.array) + ' - North-South Side Misalignment', y=1.02,x=0.5)
+
+# #Adding labels
+# #plt.subplots_adjust(hspace=1.5)
+# plt.savefig(str(args.array)+str('_')+tag+'_LN-LS_MaxVar_centra_bars.png',bbox_inches='tight')
+# #plt.show() #uncomment this if you want display plots while running code
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # PLOT 3 LN-LS_MaxVar_13_measured_points:  New plot upon Paolo's request  - FOR VENDORS - (mean of 26 points w/o wrapping)
+#                               VERSION WITH FIXED Y AXIS RANGE
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
 fig, ax1 = plt.subplots()
-plt.xlim([0.,12.3]) #to include first and last 3 bars
 
 #++++++++++++++++++++++++
 #    South Side
 #++++++++++++++++++++++++
+sud_misalign = np.append([np.nan,np.nan,np.nan], sud_misalign)
+sud_x_index = np.arange(0,16,1)
 
-color = 'tab:blue'
-ax1.set_xlabel('# Bar')
-ax1.set_ylabel('South Side [mm]', color=color)
-ax1.plot(sud, '-',color=color,linestyle='dashed', marker='o',label='South Side')
-ax1.set_xticks(np.arange(-3,len(sud)-6,1)) #to include first and last 3 bars
-
-ax1.tick_params(axis='y', labelcolor=color)
-points = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15']
-ax1.set_xticklabels(points)
-ax1.grid()
+color = 'tab:red'
+ax1.plot(sud_x_index, sud_misalign, color=color,linestyle='dashed', marker='o',label='Barcode Side') 
 
 #++++++++++++++++++++++++
 #    North Side
 #++++++++++++++++++++++++
 
-ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-ax2.invert_xaxis() # to invert x axis on LNax2.set_xticks(np.arange(-3,len(sud),1)) #to include first and last 3 bars
-ax2.set_xticks(np.arange(-3,len(sud),1)) #to include first and last 3 bars
+nord_x_index = np.arange(0,13,1)
+color = 'tab:blue'
+ax1.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='Opposite to Barcode Side')
 
+# Labels and appearance
+ax1.grid()
 
-ax2.yaxis.set_major_formatter(ScalarFormatter(useOffset=55))
+ax1.set_xlabel('# Bar')
+loc = plticker.MultipleLocator(base=1.0) # this locator puts ticks at regular intervals
+ax1.xaxis.set_major_locator(loc)
 
-color = 'tab:red'
-ax2.set_ylabel('North Side [mm]', color=color)  # we already handled the x-label with ax1
-ax2.plot(nord, '-r',color=color,linestyle='dashed', marker='o',label='North Side')
+ax1.set_ylabel('Mis-alignment [mm]')
+plt.ylim([-0.09,0.09]) # fix y range
+
+ax1.text(0.1,-0.038,'MTD tolerance (0.060 mm)',color='r')
+plt.axhline(y = 0.03, color = 'r', linestyle = '--') # MTD acceptance
+plt.axhline(y =-0.03, color = 'r', linestyle = '--') # MTD acceptance
 
 # Adding legend
 fig.legend(loc='upper left', bbox_to_anchor=(0.03,0.15), bbox_transform=ax1.transAxes)
-ax2.tick_params(axis='y', labelcolor=color)
 fig.tight_layout()  # otherwise the right y-label is slightly clipped
-plt.suptitle('CMS MTD' + str(args.array) + ' - North-South Side Y', y=1.02,x=0.5)
+plt.suptitle('CMS MTD' + str(args.array) + ' - North-South Side Misalignment', y=1.02,x=0.5)
 
-#Adding labels
-#plt.subplots_adjust(hspace=1.5)
-plt.savefig(str(args.array)+str('_')+tag+'_LN-LS_MaxVar_13_measured_points.pdf',bbox_inches='tight')
+# Plot show/saving
+plt.savefig(run+"_"+date+"_"+str(args.array)+str('_')+tag+'_LN-LS_MaxVar_13_measured_points.png',bbox_inches='tight')
 #plt.show() #uncomment this if you want display plots while running code
-'''
-'''
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# PLOT 4 LN-LS_MaxVar_central:  Same as plot 3 but only 10 central bars
+#                  VERSION WITH FIXED Y AXIS RANGE
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+fig, ax1 = plt.subplots()
+
+#++++++++++++++++++++++++
+#    South Side
+#++++++++++++++++++++++++
+sud_misalign = np.delete(sud_misalign, [0,1,2,13,14,15], None)
+sud_x_index = np.arange(3,13,1)
+
+color = 'tab:blue'
+ax1.plot(sud_x_index, sud_misalign, color=color,linestyle='dashed', marker='o',label='Barcode Side')
+
+#++++++++++++++++++++++++
+#    North Side
+#++++++++++++++++++++++++
+
+nord_misalign = np.delete(nord_misalign, [10,11,12], None)
+nord_x_index = np.arange(3,13,1)
+
+color = 'tab:red'
+ax1.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='Opposite to Barcode Side')
+
+# Labels and appearance
+ax1.grid()
+
+ax1.set_xlabel('# Bar')
+loc = plticker.MultipleLocator(base=1.0) # this locator puts ticks at regular intervals
+ax1.xaxis.set_major_locator(loc)
+
+ax1.set_ylabel('Mis-alignment [mm]')
+plt.ylim([-0.09,0.09]) # fix y range
+
+ax1.text(3.1,-0.038,'MTD tolerance (0.060 mm)',color='r')
+plt.axhline(y = 0.03, color = 'r', linestyle = '--') # MTD acceptance
+plt.axhline(y =-0.03, color = 'r', linestyle = '--') # MTD acceptance
+
+# Adding legend
+fig.legend(loc='upper left', bbox_to_anchor=(0.03,0.15), bbox_transform=ax1.transAxes)
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.suptitle('CMS MTD' + str(args.array) + ' - North-South Side Misalignment', y=1.02,x=0.5)
+
+# Plot show/saving
+plt.savefig(run+"_"+date+"_"+str(args.array)+str('_')+tag+'_LN-LS_MaxVar_central.png',bbox_inches='tight')
+#plt.show() #uncomment this if you want display plots while running code
+
+
 print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 print('    New mean dataset after removing points used to compute wrapping measurements: USE ONLY to match points in Paolo plot     ')
 print('  Mean computed over 26 points --> plotted 13 points for each side corresponding to 13 single bars we can measure per array  ')
 print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-p2 = PrettyTable(['Array','Min LS','Max LS', 'MaxVar LS','Min LN','Max LN', 'MaxVar LN','MaxVar mean','Max length'])
-p2.add_row([barcode.split('/')[1],str(sud_min.round(3))+' mm',str(sud_max.round(3))+' mm',str((sud_max-sud_min).round(3))+' mm',str(nord_min.round(3))+' mm',str(nord_max.round(3))+' mm',str((nord_max-nord_min).round(3))+' mm',str((((sud_max-sud_min)+(nord_max-nord_min))/2).round(3))+' mm',str(array_length_max_nowr.round(3))+' mm'])
-print(p2)
-'''
+# p2 = PrettyTable(['Array','Min LS','Max LS', 'MaxVar LS','Min LN','Max LN', 'MaxVar LN','MaxVar mean','Max length'])
+# p2.add_row([barcode.split('/')[1],str(sud_min.round(3))+' mm',str(sud_max.round(3))+' mm',str((sud_max-sud_min).round(3))+' mm',str(nord_min.round(3))+' mm',str(nord_max.round(3))+' mm',str((nord_max-nord_min).round(3))+' mm',str((((sud_max-sud_min)+(nord_max-nord_min))/2).round(3))+' mm',str(array_length_max_nowr.round(3))+' mm'])
+# print(p2)
 
 #++++++++++++++++++++++++++++++++++++++++
 #  length: average array size along Y
@@ -1116,26 +1202,32 @@ mitutoyo_array_width_std = (np_mitutoyo_width.std()).round(3)
 np_thickness = df_FS['Z'].to_numpy()
 np_thickness = np_thickness.round(3)
 
+###################################
+### TEMPORARY FIX FOR FIRST PRE-PROD BATCH (subtract 75um from label thickness)
+print ("before fix: ", np_thickness.mean().round(3),np_thickness.std().round(3))
+#np_thickness = np_thickness - 0.075
+print ("after fix: ", np_thickness.mean().round(3),np_thickness.std().round(3))
+###################################
+
 thickness_mean = np_thickness.mean().round(3)
 thickness_std = np_thickness.std().round(3)
-
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Max. Z variation on front side (thickness)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
-max_z_FS = np.amax(df_FS['Z'].to_numpy())
-min_z_FS = np.amin(df_FS['Z'].to_numpy())
+max_z_FS = np.amax(np_thickness)
+min_z_FS = np.amin(np_thickness)
 delta_z_FS = (max_z_FS - min_z_FS).round(3)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Mean on Z on front side (thickness)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
-mean_z_FS = (df_FS['Z'].to_numpy()).mean().round(3)
+mean_z_FS = (np_thickness).mean().round(3)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Std. dev. on Z on front side (thickness)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
-std_z_FS = (df_FS['Z'].to_numpy()).std().round(3)
+std_z_FS = (np_thickness).std().round(3)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Max. array size along Z (thickness)
@@ -1146,7 +1238,7 @@ array_thickness_max = (max_z_FS - 0).round(3)
 #     Average array size along Z (thickness)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 array_thickness_mean = (mean_z_FS - 0).round(3)
-array_thickness_mean_std = round( std_z_FS / mt.sqrt( (df_FS['Z'].to_numpy()).size ), 3 )
+array_thickness_mean_std = round( std_z_FS / mt.sqrt( (np_thickness).size ), 3 )
 
 #+++++++++++++++++++++++++++++++++++++++++++
 # ******** GEOMETRY DEFINITION ******** 
@@ -1173,7 +1265,7 @@ else:
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Simulating Mitutoyo (thickness)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
-np_mitutoyo_thickness = df_FS['Z'].to_numpy()
+np_mitutoyo_thickness = np_thickness
 
 mitutoyo_array_thickness_mean = (np_mitutoyo_thickness.mean()).round(3)
 mitutoyo_array_thickness_std = (np_mitutoyo_thickness.std()).round(3)
