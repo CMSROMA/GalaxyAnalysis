@@ -1,33 +1,17 @@
-import sys
-import seaborn as sns
-import os
-import matplotlib.pyplot as plt
-from matplotlib import rc
-from matplotlib.ticker import ScalarFormatter
-import matplotlib.ticker as plticker
 import pandas as pd
-from array import array
-import sys, os, argparse
+import os, argparse
 import math as mt
 import numpy as np
-import re
-from collections import defaultdict
-import pandas as pd
 import csv
 import json
-import datetime
-import itertools
 from datetime import datetime
 from prettytable import PrettyTable
-import seaborn as sns
 import matplotlib.pyplot as plt
-from matplotlib import rc
-import pandas as pd
-import argparse
-import glob
+import matplotlib.ticker as plticker
 import timeit
-from scipy.ndimage.interpolation import shift
 
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #     HOW TO RUN OVER ONE SINGLE FILE
@@ -282,16 +266,6 @@ df_LN = df_LN.reindex(['37','38','39','34','35','36','31','32','33','28','29','3
 df_LN.index = pd.RangeIndex(1,1 + len(df_LN))
 
 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  CHECK REORDERED DATASETS: uncomment this if you want the print out 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#print ('LATO SUD')
-#print(df_LS)
-#print ('LATO NORD')
-#print(df_LN)
-
-
 #+++++++++++++++++++++++++++++++
 #   VERSION WITH WRAPPING
 #+++++++++++++++++++++++++++++++
@@ -314,14 +288,9 @@ y_nord = []
 south_side = []
 north_side = []
 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#   POINTS ASSOCIATION FOR WRAPPING EXCESS MEASUREMENT
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-'''
-print('++++++++++++++++++++++++++')
-print('  WRAPPING SUMMARY TABLE  ')
-print('++++++++++++++++++++++++++')
-'''
+#++++++++++++++++++++++++++++++++++
+#   WRAPPING EXCESS MEASUREMENT
+#++++++++++++++++++++++++++++++++++
 for point in range(3,31,3):
     
     y_wrap_LS = float(df_LS.loc[point]['Y'])
@@ -331,22 +300,21 @@ for point in range(3,31,3):
         
     wrap_length.append(wrapping)
         
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  WRAPPING SUMMARY TABLE: comment this if you don't want the print out of points association 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-'''
-    p = PrettyTable(['Point LS','Point LN','y_wrap_LS', 'y_wrap_LN','length w/wrapping','Z LS','Z LN','X LS','X LN'])
-    p.add_row([point, (33-point),y_wrap_LS,y_wrap_LN,wrapping,df_LS.loc[(point)]['Z'],df_LN.loc[(33-point)]['Z'],df_LS.loc[(point)]['X'],df_LN.loc[(33-point)]['X']])
-    print(p)
-'''
+    # print('++++++++++++++++++++++++++')
+    # print('  WRAPPING SUMMARY TABLE  ')
+    # print('++++++++++++++++++++++++++')
+    # p = PrettyTable(['Point LS','Point LN','y_wrap_LS', 'y_wrap_LN','length w/wrapping','Z LS','Z LN','X LS','X LN'])
+    # p.add_row([point, (33-point),y_wrap_LS,y_wrap_LN,wrapping,df_LS.loc[(point)]['Z'],df_LN.loc[(33-point)]['Z'],df_LS.loc[(point)]['X'],df_LN.loc[(33-point)]['X']])
+    # print(p)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #   POINTS ASSOCIATION FOR SINGLE BAR length MEASUREMENT
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-'''
-print('++++++++++++++++++++++++++')
-print('   length1 SUMMARY TABLE  ')
-print('++++++++++++++++++++++++++')   
-'''    
+
+# print('++++++++++++++++++++++++++')
+# print('   length1 SUMMARY TABLE  ')
+# print('++++++++++++++++++++++++++')   
+# p = PrettyTable(['Point LS','Point LN','y_LS', 'y_LN','length1','Z LS','Z LN','X LS','X LN'])
 for point in range(1,31,3):
     y_LS = float(df_LS.loc[(point)]['Y'])
     y_LN = float(df_LN.loc[(29-point)]['Y']) 
@@ -354,67 +322,41 @@ for point in range(1,31,3):
     length1 = y_LN - y_LS
     l1_length.append(length1)    
     
-#++++++++++++++++++++++++++++++++++++++++++++++++++    
-#    This is just for length histo/plot LS vs LN
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-
+    # This is just for length histo/plot LS vs LN
     sud1 = y_LS
     nord1 = y_LN   
     y_sud1.append(sud1)
     y_nord1.append(nord1)
 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  length1 SUMMARY TABLE: comment this if you don't want the print out of points association 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-'''       
-    p = PrettyTable(['Point LS','Point LN','y_LS', 'y_LN','length1','Z LS','Z LN','X LS','X LN'])
-    p.add_row([(point), (29-point),y_LS,y_LN,length1,df_LS.loc[(point)]['Z'],df_LN.loc[(29-point)]['Z'],df_LS.loc[(point)]['X'],df_LN.loc[(29-point)]['X']])
-    print(p)
-'''
-'''
-print('++++++++++++++++++++++++++')
-print('   length2 SUMMARY TABLE  ')
-print('++++++++++++++++++++++++++')   
-'''
+    # p.add_row([(point), (29-point),y_LS,y_LN,length1,df_LS.loc[(point)]['Z'],df_LN.loc[(29-point)]['Z'],df_LS.loc[(point)]['X'],df_LN.loc[(29-point)]['X']])
+# print(p)
+
+# print('++++++++++++++++++++++++++')
+# print('   length2 SUMMARY TABLE  ')
+# print('++++++++++++++++++++++++++')   
+# p = PrettyTable(['Point LS','Point LN','y_LS', 'y_LN','length2','Z LS','Z LN','X LS','X LN'])
 for point1 in range(2,31,3):
     y_LS = float(df_LS.loc[(point1)]['Y'])
     y_LN = float(df_LN.loc[(31-point1)]['Y'])  
     length2 = y_LN - y_LS
     l2_length.append(length2)
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    This is just for length histo/plot LS vs LN
-#++++++++++++++++++++++++++++++++++++++++++++++++++
+    # This is just for length histo/plot LS vs LN
     sud2 = y_LS
     nord2 = y_LN   
     y_sud2.append(sud2)
     y_nord2.append(nord2)    
     
+    # p.add_row([(point1), (31-point1),y_LS,y_LN,length2,df_LS.loc[(point1)]['Z'],df_LN.loc[(31-point1)]['Z'],df_LS.loc[(point1)]['X'],df_LN.loc[(31-point1)]['X']])
+
+# print(p)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #    Combine length in two different ranges
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    l_length = l1_length + l2_length
+l_length = l1_length + l2_length
     
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  length2 SUMMARY TABLE: comment this if you don't want the print out of points association 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-'''
-    p = PrettyTable(['Point LS','Point LN','y_LS', 'y_LN','length2','Z LS','Z LN','X LS','X LN'])
-    p.add_row([(point1), (31-point1),y_LS,y_LN,length2,df_LS.loc[(point1)]['Z'],df_LN.loc[(31-point1)]['Z'],df_LS.loc[(point1)]['X'],df_LN.loc[(31-point1)]['X']])
-    print(p)
-'''
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  Useful printout to check step by step if all is working fine: uncomment this if you want the print out 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#print('++++++++++++++++++++++++++++++++++++')
-#print('length 1st set of points:',l1_length)
-#print('++++++++++++++++++++++++++++++++++++')
-#print('length 2nd set of points:',l2_length)
-#print('++++++++++++++++++++++++++++++++++++')
-
-
 #++++++++++++++++++++++++++++++++++++
 #   This is for LS-LN Plots
 #++++++++++++++++++++++++++++++++++++
@@ -427,11 +369,6 @@ north_side = []
 
 south_side = np.concatenate((south_side1, south_side2))
 north_side = np.concatenate((north_side1, north_side2))
-
-
-#++++++++++++++++++++++++++++++
-# Create some mock data
-#++++++++++++++++++++++++++++++
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #         REMINDER: points used to compute the single bars length
@@ -448,15 +385,6 @@ north_side = np.concatenate((north_side1, north_side2))
 
 sud = south_side
 nord = north_side
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  Useful printout to check step by step if all is working fine: uncomment this if you want the print out 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-# 
-#+++++++++++++++++++++++++++++++++++
-# length: Single Bars in the array
-#+++++++++++++++++++++++++++++++++++
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #              REMINDER: 
@@ -478,7 +406,6 @@ np_length = np_length.round(3)
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 np_length_std = np.std(np_length_all.reshape(-1, 2), axis=1) #.reshape(-1, 2) --> 2 columns and n rows
 np_length_std = np_length_std.round(3)
-#print(np_length_std)
 
 np_wrap_length_all = np.asarray(wrap_length)
 np_wrap_length = np.mean(np_wrap_length_all.reshape(-1, 2), axis=1)
@@ -607,239 +534,146 @@ plt.legend()
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  length: Y -> MaxVar - Mean - Spread - Max array size
+#  LENGTH MEASUREMENTS WITH WRAPPING AND ALL BARS
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  - with 39 points used to compute wrapping excess -
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Max. Y variation on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-
 
 max_y_LS = np.amax(df_LS['Y'].to_numpy()) #considering wrapping
 min_y_LS = np.amin(df_LS['Y'].to_numpy()) #considering wrapping
 
-delta_y_LS = (max_y_LS - min_y_LS).round(3)
-
 max_y_LN = np.amax(df_LN['Y'].to_numpy()) #considering wrapping
 min_y_LN = np.amin(df_LN['Y'].to_numpy()) #considering wrapping
 
-delta_y_LN = (max_y_LN - min_y_LN).round(3)
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#      Mean on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-mean_y_LS = (df_LS['Y'].to_numpy()).mean().round(3)
 mean_y_LN = (df_LN['Y'].to_numpy()).mean().round(3)
+mean_y_LS = (df_LS['Y'].to_numpy()).mean().round(3)
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#     Spread on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
+# Spread on Y on north/sud side (length)
 std_y_LS = (df_LS['Y'].to_numpy()).std().round(3)
 std_y_LN = (df_LN['Y'].to_numpy()).std().round(3)
 std_deltay = round(mt.sqrt(std_y_LS**2+std_y_LN**2),3)
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#     Max. array size along Y (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
+# MAX LENGTH
 array_length_max = (max_y_LN - min_y_LS).round(3)
 
-'''
-print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-print('------ with wrapping and all points (39 points on each side) ------')
-print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    
-p = PrettyTable(['Array','MaxVar Y LS','MaxVar Y LN','Mean Y LS','Mean Y LN','Spread Y LS/LN', 'Max array length size (Y)' ])
-p.add_row([barcode.split('/')[1], str(delta_y_LS)+' mm', str(delta_y_LN)+' mm', str(mean_y_LS)+' mm',str(mean_y_LN)+' mm',str(std_deltay)+' mm',str(array_length_max)+' mm'])
-print(p)
-print('')
-print('MAX_LN:',max_y_LN)
-print('MIN_LN:',min_y_LN)
-print('MAXVAR_LN:',delta_y_LN)
-print('')
-'''
+# MEAN LENGTH
+array_length_mean = (mean_y_LN - mean_y_LS).round(3)
+array_length_mean_std = round(mt.sqrt( (std_y_LS/ mt.sqrt((df_LS['Y'].to_numpy()).size) )**2
+                               + (std_y_LN/mt.sqrt((df_LN['Y'].to_numpy()).size) )**2  ) , 3)
+
+# LENGTH MAX VAR
+delta_y_LN = (max_y_LN - min_y_LN).round(3)
+delta_y_LS = (max_y_LS - min_y_LS).round(3)
+
+# print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+# print('------ L with wrapping and all points (39 points on each side) ------')
+# print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')    
+# p = PrettyTable(['Array','MaxVar Y LS','MaxVar Y LN','Mean Y LS','Mean Y LN','Spread Y LS/LN', 'Max array length size (Y)' ])
+# p.add_row([barcode.split('/')[1], str(delta_y_LS)+' mm', str(delta_y_LN)+' mm', str(mean_y_LS)+' mm',str(mean_y_LN)+' mm',str(std_deltay)+' mm',str(array_length_max)+' mm'])
+# print(p)
+# print('')
+# print('MAX_LN:',max_y_LN)
+# print('MIN_LN:',min_y_LN)
+# print('MAXVAR_LN:',delta_y_LN)
+# print('')
+
+
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  length: Y -> MaxVar - Mean - Spread - Max array size
+#  LENGTH MEASUREMENTS ON ALL BARS W/O WRAPPING
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  - w/o points used to compute wrapping excess (26 points) -
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Max. Y variation on north/sud side (length) excluding points used to compute wrapping excess
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Create some mock data for all point collected along LS and LN - 26 points on each side -
-
-sud = df_LS['Y'].to_numpy() #considering wrapping
-print('sud with wrapping: ', sud, len(sud))
+sud = df_LS['Y'].to_numpy() 
 sud = np.delete(sud,(2,5,8,11,14,17,20,23,26,29,32,35,38),axis=0) #not considering wrapping
-print('sud w/o wrapping: ', sud)
-nord = df_LN['Y'].to_numpy() #considering wrapping
+nord = df_LN['Y'].to_numpy()
 nord = np.delete(nord,(2,5,8,11,14,17,20,23,26,29,32,35,38),axis=0) #not considering wrapping
 
-#-------------------------------------------------------------------------------------
-# ADDITIONAL OUTPUT: uncomment this if you want the print out 
-#-------------------------------------------------------------------------------------
-
-#print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-#print('Lato Sud considering w/o points for wrapping')
-#print(sud)
-#print('Lato Nord considering w/o points for wrapping')
-#print(nord)
-#print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-#print('')
-
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  Test: plot for all 26 points collected on LS and LN - w/o points for wrapping
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-#------------------------------------------
-#    TEST MAX VAR excluding wrapping
-#------------------------------------------
 max_y_LS_nowr = np.amax(sud)
 min_y_LS_nowr = np.amin(sud)
-np.sort(sud)
-print('sud:', np.sort(sud))
-delta_y_LS_nowr = (max_y_LS_nowr - min_y_LS_nowr).round(3)
 
 max_y_LN_nowr = np.amax(nord)
 min_y_LN_nowr = np.amin(nord)
 
-delta_y_LN_nowr= (max_y_LN_nowr - min_y_LN_nowr).round(3)
-
-print('HERE ARE THE LMAXVAR RESULTS')
-print('LN: ', delta_y_LN_nowr)
-print('LS: ', delta_y_LS_nowr)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Mean on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-mean_y_LS_nowr = (sud.mean().round(3))
-mean_y_LN_nowr = (nord.mean().round(3))
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Spread on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
+# Spread on Y on north/sud side (length)
 std_y_LS_nowr = (sud.std().round(3))
 std_y_LN_nowr = (nord.std().round(3))
 std_deltay_nowr = round(mt.sqrt(std_y_LS_nowr**2+std_y_LN_nowr**2),3)
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Max. array size along Y (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
+# MAX LENGTH W/O WRAPPING
 array_length_max_nowr = (max_y_LN_nowr - min_y_LS_nowr).round(3)
 
-'''
-print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
-print('------ w/o wrapping (26 points on each side) ------')
-print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
+# MEAN LENGTH W/O WRAPPING
+mean_y_LS_nowr = (sud.mean().round(3))
+mean_y_LN_nowr = (nord.mean().round(3))
 
-p = PrettyTable(['Array','MaxVar Y LS','MaxVar Y LN','Mean Y LS','Mean Y LN','Spread Y LS/LN', 'Max array length size (Y)' ])
-p.add_row([barcode.split('/')[1], str(delta_y_LS_nowr)+' mm', str(delta_y_LN_nowr)+' mm', str(mean_y_LS_nowr)+' mm',str(mean_y_LN_nowr)+' mm',str(std_deltay_nowr)+' mm',str(array_length_max_nowr)+' mm'])
-print(p)
-print('')
-print('MAX_LN_nowr:',max_y_LN_nowr)
-print('MIN_LN_nowr:',min_y_LN_nowr)
-print('MAXVAR_LN_nowr:',delta_y_LN_nowr)
-print('')
-'''
+array_length_mean_nowr = (mean_y_LN_nowr - mean_y_LS_nowr).round(3)
+array_length_mean_std_nowr = round(mt.sqrt( (std_y_LS_nowr/ mt.sqrt(sud.size) )**2
+                               + (std_y_LN_nowr/mt.sqrt(nord.size) )**2  ) , 3)
+
+# LMAXVAR along Y
+delta_y_LS_nowr = (max_y_LS_nowr - min_y_LS_nowr).round(3)
+delta_y_LN_nowr= (max_y_LN_nowr - min_y_LN_nowr).round(3)
+
+
+
+#----------------------------------------------------------------------
+#    LENGTH MEASUREMENT W/O WRAPPING AND EXTERNAL BARS
+#----------------------------------------------------------------------
+
+# Remove Bar 0 (LS) and Bar 15 (LN) because of instable measurements
+sud  = np.delete(sud ,(-1,-2),axis=0)
+nord = np.delete(nord,(-1,-2),axis=0)
+
+max_y_LS_noExtBars = np.amax(sud)
+min_y_LS_noExtBars = np.amin(sud)
+
+max_y_LN_noExtBars = np.amax(nord)
+min_y_LN_noExtBars = np.amin(nord)
+
+# Spread on Y on north/sud side (length)
+std_y_LS_noExtBars = (sud.std().round(3))
+std_y_LN_noExtBars = (nord.std().round(3))
+std_deltay_noExtBars = round(mt.sqrt(std_y_LS_noExtBars**2+std_y_LN_noExtBars**2),3)
+
+# MAX LENGTH W/O EXTERNAL BARS
+array_length_max_noExtBars = (max_y_LN_noExtBars - min_y_LS_noExtBars).round(3)
+
+# MEAN LENGTH W/O EXTERNAL BARS
+mean_y_LS_noExtBars = (sud.mean().round(3))
+mean_y_LN_noExtBars = (nord.mean().round(3))
+array_length_mean_noExtBars = (mean_y_LN_noExtBars - mean_y_LS_noExtBars).round(3)
+array_length_mean_std_noExtBars = round(mt.sqrt( (std_y_LS_noExtBars/ mt.sqrt(sud.size) )**2
+                               + (std_y_LN_noExtBars/mt.sqrt(nord.size) )**2  ) , 3)
+
+# LENGTH MAX VARIATION W/O EXTERNAL BARS
+delta_y_LS_noExtBars = (max_y_LS_noExtBars - min_y_LS_noExtBars).round(3)
+delta_y_LN_noExtBars= (max_y_LN_noExtBars - min_y_LN_noExtBars).round(3)
+
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Create some mock data for all point collected along LS and LN - 39 points on each side -
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 sud = df_LS['Y'].to_numpy() #considering wrapping
-           
 nord = df_LN['Y'].to_numpy() #considering wrapping
 
-#------------------------------------------
-#    TEST MAX VAR including wrapping
-#------------------------------------------
-max_y_LS = np.amax(sud)
-min_y_LS = np.amin(sud)
-
-delta_y_LS = (max_y_LS - min_y_LS).round(3)
-
-max_y_LN = np.amax(nord)
-min_y_LN = np.amin(nord)
-delta_y_LN = (max_y_LN - min_y_LN).round(3)
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Mean on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-mean_y_LS = (sud.mean().round(3))
-mean_y_LN = (nord.mean().round(3))
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Spread on Y on north/sud side (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-std_y_LS = (sud.std().round(3))
-std_y_LN = (nord.std().round(3))
-std_deltay = round(mt.sqrt(std_y_LS**2+std_y_LN**2),3)
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-#    Max. array size along Y (length)
-#++++++++++++++++++++++++++++++++++++++++++++++++++
-array_length_max = (max_y_LN - min_y_LS).round(3)
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  Stuff for new plot upon Paolo's request  - FOR VENDORS -
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#   Removing points used to compute wrapping measurements
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Removing points used to compute wrapping measurements
 
 df1_LS = df_LS.drop([3,6,9,12,15,18,21,23,27,30,33,36,39])
 df1_LN = df_LN.drop([3,6,9,12,15,18,21,23,27,30,33,36,39])
-
-#-------------------------------------------------------------------------------------
-# ADDITIONAL OUTPUT: uncomment this if you want the print out 
-#-------------------------------------------------------------------------------------
-
-#print('++++++++++++++++++++++++++++++')
-#print('Initial dataset for LS',df_LS)
-#print('-----------------------------')
-#print('Initial dataset for LN',df_LN)
-#print('-----------------------------')
-#print('South Side Points',df1_LS)
-#print('-----------------------------')
-#print('North Side Points',df1_LN)
-#print('-----------------------------')
-
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #      New dataset after removing points used to compute wrapping measurements
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-south_side = []
-north_side = []
-
-LS = df1_LS['Y']
-LN = df1_LN['Y']
-
-south_side.append(LS)
-north_side.append(LN)
-
-sud = np.array(LS)
-print('Original sud', sud, len(sud))
-nord = np.array(north_side)
+sud  = np.array(df1_LS['Y'])
+nord = np.array(df1_LN['Y'])
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  Compute Mean Value for the two points/measurements on each side (LS-LN) 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-print("sud plot 3 before average: ", sud)
 n=2
 sud = np.average(sud.reshape(-1, n), axis=1)
 nord = np.average(nord.reshape(-1, n), axis=1)
-print('Sud after averages: ',sud)
+
 sud_min = np.amin(sud)
 sud_max = np.amax(sud)
 nord_min = np.amin(nord)
@@ -849,98 +683,6 @@ nord = nord[::-1]
 
 sud_misalign = sud - sud.mean()
 nord_misalign = nord - nord.mean()
-
-# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# # PLOT 3 LN-LS_MaxVar_13_measured_points:  New plot upon Paolo's request  - FOR VENDORS - (mean of 26 points w/o wrapping)
-# #                 VERSION WITH DIFFERENT Y AXES RANGE FOR LN AND LS
-# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-# fig, ax1 = plt.subplots()
-
-# #++++++++++++++++++++++++
-# #    South Side
-# #++++++++++++++++++++++++
-# sud_misalign = np.append(sud_misalign, [np.nan,np.nan,np.nan])
-# sud_x_index = np.arange(0,16,1)
-
-# color = 'tab:blue'
-
-# ax1.set_xlabel('# Bar')
-# ax1.set_ylabel('South Side [mm]', color=color)
-# ax1.plot(sud_x_index, sud_misalign, color=color,linestyle='dashed', marker='o')
-# loc = plticker.MultipleLocator(base=1.0) # this locator puts ticks at regular intervals
-# ax1.xaxis.set_major_locator(loc)
-# ax1.tick_params(axis='y', labelcolor=color)
-# ax1.grid()
-
-# # points = ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14']
-# # ax1.set_xticklabels(points)
-# #++++++++++++++++++++++++
-# #    North Side
-# #++++++++++++++++++++++++
-
-# nord_x_index = np.arange(3,16,1)
-# ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-# # ax2.invert_xaxis() # to invert x axis on LNax2.set_xticks(np.arange(-3,len(sud),1)) #to include first and last 3 bars
-# # # ax2.set_xticks(np.arange(-3,len(sud),1)) #to include first and last 3 bars
-
-# color = 'tab:red'
-# ax2.set_ylabel('North Side [mm]', color=color)  # we already handled the x-label with ax1
-# ax2.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='North Side')
-
-# # Adding legend
-# fig.legend(loc='upper left', bbox_to_anchor=(0.03,0.15), bbox_transform=ax1.transAxes)
-# ax2.tick_params(axis='y', labelcolor=color)
-# fig.tight_layout()  # otherwise the right y-label is slightly clipped
-# plt.suptitle('CMS MTD' + str(args.array) + ' - North-South Side Misalignment', y=1.02,x=0.5)
-
-# #Adding labels
-# #plt.subplots_adjust(hspace=1.5)
-# plt.savefig(str(args.array)+str('_')+tag+'_LN-LS_MaxVar_13_measured_points.pdf',bbox_inches='tight')
-# #plt.show() #uncomment this if you want display plots while running code
-
-# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# # PLOT 4 LN-LS_MaxVar_13_measured_points:  Same as plot 3 but only 10 central bars
-# #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-# fig, ax1 = plt.subplots()
-
-# #++++++++++++++++++++++++
-# #    South Side
-# #++++++++++++++++++++++++
-# sud_misalign = np.delete(sud_misalign, [0,1,2,13,14,15], None)
-# sud_x_index = np.arange(3,13,1)
-
-# color = 'tab:blue'
-# ax1.set_xlabel('# Bar')
-# ax1.set_ylabel('South Side mis-alignment [mm]', color=color)
-# ax1.plot(sud_x_index, sud_misalign, color=color,linestyle='dashed', marker='o')
-# loc = plticker.MultipleLocator(base=1.0) # this locator puts ticks at regular intervals
-# ax1.xaxis.set_major_locator(loc)
-# ax1.tick_params(axis='y', labelcolor=color)
-# ax1.grid()
-
-# #++++++++++++++++++++++++
-# #    North Side
-# #++++++++++++++++++++++++
-# nord_misalign = np.delete(nord_misalign, [10,11,12], None)
-# nord_x_index = np.arange(3,13,1)
-# ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-
-# color = 'tab:red'
-# ax2.set_ylabel('North Side mis-alignment [mm]', color=color)  # we already handled the x-label with ax1
-# ax2.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='North Side')
-
-# # Adding legend
-# fig.legend(loc='upper left', bbox_to_anchor=(0.03,0.15), bbox_transform=ax1.transAxes)
-# ax2.tick_params(axis='y', labelcolor=color)
-# fig.tight_layout()  # otherwise the right y-label is slightly clipped
-# plt.suptitle('CMS MTD' + str(args.array) + ' - North-South Side Misalignment', y=1.02,x=0.5)
-
-# #Adding labels
-# #plt.subplots_adjust(hspace=1.5)
-# plt.savefig(str(args.array)+str('_')+tag+'_LN-LS_MaxVar_centra_bars.png',bbox_inches='tight')
-# #plt.show() #uncomment this if you want display plots while running code
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # PLOT 3 LN-LS_MaxVar_13_measured_points:  New plot upon Paolo's request  - FOR VENDORS - (mean of 26 points w/o wrapping)
@@ -964,7 +706,7 @@ ax1.plot(sud_x_index, sud_misalign, color=color,linestyle='dashed', marker='o',l
 
 nord_x_index = np.arange(0,13,1)
 color = 'tab:blue'
-ax1.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='Opposite to Barcode Side')
+ax1.plot(nord_x_index,nord_misalign,color=color,linestyle='dashed', marker='o',label='Opposite to Barcode Side')
 
 # Labels and appearance
 ax1.grid()
@@ -1013,7 +755,7 @@ nord_misalign = np.delete(nord_misalign, [10,11,12], None)
 nord_x_index = np.arange(3,13,1)
 
 color = 'tab:red'
-ax1.plot(nord_x_index,nord_misalign, '-r',color=color,linestyle='dashed', marker='o',label='Opposite to Barcode Side')
+ax1.plot(nord_x_index,nord_misalign, color=color,linestyle='dashed', marker='o',label='Opposite to Barcode Side')
 
 # Labels and appearance
 ax1.grid()
@@ -1039,37 +781,15 @@ plt.savefig(run+"_"+date+"_"+str(args.array)+str('_')+tag+'_LN-LS_MaxVar_central
 #plt.show() #uncomment this if you want display plots while running code
 
 
-print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-print('    New mean dataset after removing points used to compute wrapping measurements: USE ONLY to match points in Paolo plot     ')
-print('  Mean computed over 26 points --> plotted 13 points for each side corresponding to 13 single bars we can measure per array  ')
-print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+# print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+# print('    New mean dataset after removing points used to compute wrapping measurements: USE ONLY to match points in Paolo plot     ')
+# print('  Mean computed over 26 points --> plotted 13 points for each side corresponding to 13 single bars we can measure per array  ')
+# print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
 # p2 = PrettyTable(['Array','Min LS','Max LS', 'MaxVar LS','Min LN','Max LN', 'MaxVar LN','MaxVar mean','Max length'])
-# p2.add_row([barcode.split('/')[1],str(sud_min.round(3))+' mm',str(sud_max.round(3))+' mm',str((sud_max-sud_min).round(3))+' mm',str(nord_min.round(3))+' mm',str(nord_max.round(3))+' mm',str((nord_max-nord_min).round(3))+' mm',str((((sud_max-sud_min)+(nord_max-nord_min))/2).round(3))+' mm',str(array_length_max_nowr.round(3))+' mm'])
+# p2.add_row([barcode.split('/')[1],str(sud_min.round(3))+' mm',str(sud_max.round(3))+' mm',str((sud_max-sud_min).round(3))+' mm',str(nord_min.round(3))+' mm',str(nord_max.round(3))+' mm',str((nord_max-nord_min).round(3))+' mm',str((((sud_max-sud_min)+(nord_max-nord_min))/2).round(3))+' mm',str(array_length_max_noExtBars.round(3))+' mm'])
 # print(p2)
 
-#++++++++++++++++++++++++++++++++++++++++
-#  length: average array size along Y
-#++++++++++++++++++++++++++++++++++++++++
-
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#     Average array size along Y (length) with wrapping points
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-array_length_mean = (mean_y_LN - mean_y_LS).round(3)
-array_length_mean_std = round(mt.sqrt( (std_y_LS/ mt.sqrt((df_LS['Y'].to_numpy()).size) )**2
-                               + (std_y_LN/mt.sqrt((df_LN['Y'].to_numpy()).size) )**2  ) , 3)
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#     Average array size along Y (length) w/o wrapping points
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-array_length_mean_nowr = (mean_y_LN_nowr - mean_y_LS_nowr).round(3)
-array_length_mean_std_nowr = round(mt.sqrt( (std_y_LS_nowr/ mt.sqrt(sud.size) )**2
-                               + (std_y_LN_nowr/mt.sqrt(nord.size) )**2  ) , 3)
-
-#++++++++++++++++++++++++++++++++++++++++
-#     length: Mitutoyo simulation
-#++++++++++++++++++++++++++++++++++++++++
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Simulating Mitutoyo (length) with wrapping
@@ -1099,11 +819,6 @@ mitutoyo_array_length_nowr_std = (np_mitutoyo_length_nowr.std()).round(3)
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  WIDTH: X -> MaxVar - Mean - Spread - Max array size - average array size
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-# =============
-# === Width ===
-# =============
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++
 #     Max. X variation on 'ovest'/east side (width)
@@ -1257,14 +972,22 @@ json_array = [{
     'time': date,
     'L_bar_mu':  length_mean,
     'L_bar_std':  length_std,
-    'L_maxVar_LS': delta_y_LS_nowr,
-    'L_maxVar_LN': delta_y_LN_nowr,
-    'L_std_LS': std_y_LS_nowr,
-    'L_std_LN': std_y_LN_nowr,
-    'L_std_tot': std_deltay_nowr,
-    'L_max': array_length_max_nowr,
-    'L_mean': array_length_mean_nowr,
+    'L_maxVar_LS': delta_y_LS_noExtBars,
+    'L_maxVar_LN': delta_y_LN_noExtBars,
+    'L_std_LS': std_y_LS_noExtBars,
+    'L_std_LN': std_y_LN_noExtBars,
+    'L_std_tot': std_deltay_noExtBars,
+    'L_max': array_length_max_noExtBars,
+    'L_mean': array_length_mean_noExtBars,
     'L_mean_std': array_length_mean_std_nowr,
+    'L_maxVar_LS_allBars': delta_y_LS_nowr,
+    'L_maxVar_LN_allBars': delta_y_LN_nowr,
+    'L_std_LS_allBars': std_y_LS_nowr,
+    'L_std_LN_allBars': std_y_LN_nowr,
+    'L_std_tot_allBars': std_deltay_nowr,
+    'L_max_allBars': array_length_max_nowr,
+    'L_mean_allBars': array_length_mean_nowr,
+    'L_mean_std_allBars': array_length_mean_std_nowr,
     'L_mean_mitu': '',
     'L_std_mitu': '',
     'W_maxVar_LO':delta_x_LO,
@@ -1490,19 +1213,22 @@ l_results_names = ['runName','id','time',
                        'W_maxVar_LO','W_maxVar_LE','W_std_LO','W_std_LE','W_std_tot','W_max','W_mean','W_mean_std',
                        'W_mean_mitu','W_std_mitu',
                        'T_maxVar_FS','T_std_FS','T_max','T_mean','T_mean_std','T_mean_mitu','T_std_mitu','bar',
-                       'bar_length','bar_length_std','type']
+                       'bar_length','bar_length_std','type'
+                       'L_maxVar_LS_allBars','L_maxVar_LN_allBars','L_std_LS_allBars','L_std_LN_allBars','L_std_tot_allBars','L_max_allBars','L_mean_allBars','L_mean_std_allBars',
+                       ]
 
 
 l_results = [[run.split('/')[-1]+'_ARRAY'+barcode+str('_')+tag,barcode,date,          
                  length_mean,length_std,
-                 delta_y_LS_nowr,delta_y_LN_nowr,std_y_LS_nowr,std_y_LN_nowr,std_deltay_nowr,array_length_max_nowr,array_length_mean_nowr,array_length_mean_std_nowr, #w/o wrapping
+                 delta_y_LS_noExtBars,delta_y_LN_noExtBars,std_y_LS_noExtBars,std_y_LN_noExtBars,std_deltay_noExtBars,array_length_max_noExtBars,array_length_mean_noExtBars,array_length_mean_std_noExtBars, #w/o wrapping
                  #delta_y_LS,delta_y_LN,std_y_LS,std_y_LN,std_deltay,array_length_max,array_length_mean,array_length_mean_std, #with wrapping
                  '','',
                  delta_x_LO,delta_x_LE,std_x_LO,std_x_LE,std_deltax,array_width_max,array_width_mean,array_width_mean_std,
                  '','',
                  delta_z_FS,std_z_FS,array_thickness_max,array_thickness_mean,array_thickness_mean_std,
                  '','',
-                 '','' ,'',''],
+                 '','' ,'','',
+                 delta_y_LS_nowr,delta_y_LN_nowr,std_y_LS_nowr,std_y_LN_nowr,std_deltay_nowr,array_length_max_nowr,array_length_mean_nowr,array_length_mean_std_nowr],
              [run.split('/')[-1]+'_ARRAY'+barcode+str('_')+tag,barcode,date,'','','','','','','','','','','','','','','','','','','','','','','','','','','','','',0,'','','array'],
              [run.split('/')[-1]+'_ARRAY'+barcode+str('_')+tag,barcode,date,'','','','','','','','','','','','','','','','','','','','','','','','','','','','','',1,'','','array'],    
              [run.split('/')[-1]+'_ARRAY'+barcode+str('_')+tag,barcode,date,'','','','','','','','','','','','','','','','','','','','','','','','','','','','','',2,'','','array'],
@@ -1610,6 +1336,22 @@ print(p1)
 max_length_nowr = p1.get_string()
 print ('')
 
+print('++++++++++++++++++++++++++++++++')
+print('      length w/o Ext Bars       ')
+print('++++++++++++++++++++++++++++++++')
+
+p = PrettyTable(['Array','Max. Y var. (LS)','Max. Y var. (LN)','Std. dev. Y (LS)','Std. dev. Y (LN)', 'Std. dev. DeltaY (LN-LS)'])
+p.add_row([barcode+str('_')+tag,str(delta_y_LS_noExtBars)+' mm',str(delta_y_LN_noExtBars)+' mm',str(std_y_LS_noExtBars)+' mm',str(std_y_LN_noExtBars)+' mm', str(std_deltay_noExtBars)+' mm'])
+print(p)
+max_var_length_noExtBars = p.get_string()
+#print ('')
+p1 = PrettyTable(['Array','Max. array size along Y (LN - LS)','Mean array size along Y (LN - LS)','Mitutoyo Simulation '])
+p1.add_row([barcode+str('_')+tag,str(array_length_max_noExtBars)+' mm',str(array_length_mean_noExtBars)+ ' +/- '+ str(array_length_mean_std_noExtBars)+ ' mm',str(mitutoyo_array_length_nowr_mean)
+           + ' +/- '+ str(mitutoyo_array_length_nowr_std)+ ' mm'])
+print(p1)
+max_length_noExtBars = p1.get_string()
+print ('')
+
 print('+++++++++++++')
 print('    Width    ')
 print('+++++++++++++')
@@ -1649,15 +1391,15 @@ print ('')
 #+++++++++++++++++++++++++++++++++
 
 print('---Length')
-Array_L_mean = array_length_mean_nowr
-print('Array_L_mean:',str(array_length_mean_nowr)+ ' +/- '+ str(array_length_mean_std_nowr)+ ' mm')
+Array_L_mean = array_length_mean_noExtBars
+print('Array_L_mean:',str(array_length_mean_noExtBars)+ ' +/- '+ str(array_length_mean_std_noExtBars)+ ' mm')
 #Array_L_MaxVar = (((sud_max-sud_min)+(nord_max-nord_min))/2).round(3) #old version with mean value
-Array_L_MaxVar = max(delta_y_LS_nowr,delta_y_LN_nowr).round(3) #new version with max(maxvarLS,maxvarLN)
+Array_L_MaxVar = max(delta_y_LS_noExtBars,delta_y_LN_noExtBars).round(3) #new version with max(maxvarLS,maxvarLN)
 print('Array_L_MaxVar:',str(Array_L_MaxVar)+ ' mm')
-Array_L_spread = ((std_y_LS_nowr+std_y_LN_nowr)/2).round(3)
+Array_L_spread = ((std_y_LS_noExtBars+std_y_LN_noExtBars)/2).round(3)
 print('Array_L_spread:',str(Array_L_spread)+' mm')
-Array_L_MaxSize = array_length_max_nowr
-print('Array_L_MaxSize:',str(array_length_max_nowr)+' mm')
+Array_L_MaxSize = array_length_max_noExtBars
+print('Array_L_MaxSize:',str(array_length_max_noExtBars)+' mm')
 Bar_L_mean = length_mean
 print('Bar_L_mean:', str(length_mean)+ ' +/- '+ str(length_std)+' mm')
 print('---Width')
@@ -1684,73 +1426,7 @@ print('Array_T_MaxSize:',str(array_thickness_max)+' mm')
 #     Specifications for Tender
 #+++++++++++++++++++++++++++++++++
 
-#----------------------------------------------------------------------------------------------
-#                            MS3 - OPT - OPT2
-#----------------------------------------------------------------------------------------------
-# Array type |     w        |       t     |         L
-#----------------------------------------------------------------------------------------------
-#     1      | 51.50+-0.10  | 4.05+-0.10  | 55(56.30)+-0.020
-#     2      | 51.50+-0.10  | 3.30+-0.10  | 55(56.30)+-0.020
-#     3      | 51.50+-0.10  | 2.70+-0.10  | 55(56.30)+-0.020
-#----------------------------------------------------------------------------------------------
-# Bar type  |      w      |       t           |         L
-#----------------------------------------------------------------------------------------------
-#     1     | 3.12+-0.10  | 3.75+-0.10        | 55(56.30)+-0.020
-#     2     | 3.12+-0.10  | 3.00 (3.30)+-0.10 | 55(56.30)+-0.020  MS3 w and w/o ESR
-#     3     | 3.12+-0.10  | 2.40 +-0.10       | 55(56.30)+-0.020  MS3 w/o ESR
-#----------------------------------------------------------------------------------------------
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#                                 TENDER
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#Type |       Width            |        Thickness        |          Lenght
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- #1   |   51.48 (+0.10/-0.10)  |    4.11 (+0.10/-0.10)   |      54.70 (+0.05/-0.05)
- #2   |   51.48 (+0.10/-0.10)  |    3.36 (+0.10/-0.10)   |      54.70 (+0.05/-0.05)
- #3   |   51.48 (+0.10/-0.10)  |    2.76 (+0.10/-0.10)   |      54.70 (+0.05/-0.05)
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Single Bars within Array: thickness of the reflector between crystals between 60 and 100 μm.
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- #1   |    3.12 (+0.03/-0.03)  |    3.75 (+0.03/-0.03)   |      54.70 (+0.03/-0.03)
- #2   |    3.12 (+0.03/-0.03)  |    3.00 (+0.03/-0.03)   |      54.70 (+0.03/-0.03)
- #3   |    3.12 (+0.03/-0.03)  |    2.40 (+0.03/-0.03)   |      54.70 (+0.03/-0.03)
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-'''
-#------Array: After Final Tender------
-L_mean_min = 54.65 #Final
-L_mean_max = 54.75 #Final
-L_Max_min = 54.65 #Final
-L_Max_max = 54.75 #Final
-Bar_L_mean_min = 54.67 #Final
-Bar_L_mean_max = 54.73 #Final
-
-L_MaxVar = 60 #Final
-W_mean_min =  51.38 #Final
-W_mean_max =  51.58 #Final
-W_Max_min =  51.38 #Final
-W_Max_max =  51.58 #Final
-T1_mean_min = 4.01 #Final
-T1_mean_max = 4.21 #Final
-T1_Max_min = 4.01 #Final
-T1_Max_max = 4.21 #Final
-T2_mean_min = 3.26 #Final
-T2_mean_max = 3.46 #Final
-T2_Max_min = 3.26 #Final
-T2_Max_max = 3.46 #Final
-T3_mean_min = 2.66 #Final
-T3_mean_max = 2.86 #Final
-T3_Max_min = 2.66 #Final
-T3_Max_max = 2.86 #Final
-'''
-
 #+++++++++++++++++++++++++++++++++
-#L_mean_min = 56.28 #MS3/OPT
-#L_mean_max = 56.32 #MS3/OPT
-#L_Max_min = 56.25 #MS3/OPT
-#L_Max_max = 56.35 #MS3/OPT
-#Bar_L_mean_min = 56.28  #MS3/OPT
-#Bar_L_mean_max = 56.32  #MS3/OPT
 
 L_mean_min = 54.98 #OPT2
 L_mean_max = 55.02 #OPT2
@@ -1900,8 +1576,8 @@ print(' INFORMATIONS FOR TENDER  ')
 print('**************************')
 
 ptender = PrettyTable(['Array','Array_L_mean','Array_L_MaxVar','Array_L_spread','Array_L_MaxSize','Bar_L_mean'])
-ptender.add_row([barcode+str('_')+tag,str(array_length_mean_nowr)+ ' mm',str(Array_L_MaxVar*1000)+ ' \u03BCm',
-                 str(Array_L_spread*1000)+ ' \u03BCm',str(array_length_max_nowr)+' mm', str(length_mean)+' mm'])
+ptender.add_row([barcode+str('_')+tag,str(array_length_mean_noExtBars)+ ' mm',str(Array_L_MaxVar*1000)+ ' \u03BCm',
+                 str(Array_L_spread*1000)+ ' \u03BCm',str(array_length_max_noExtBars)+' mm', str(length_mean)+' mm'])
 print(ptender)
 tender_L = ptender.get_string()
 
@@ -1973,6 +1649,12 @@ with open(run+str('_ARRAY')+barcode+str('_')+tag+'_output.txt','w') as f:
     f.write(max_var_length_nowr)
     f.write('\n\r') 
     f.write(max_length_nowr)
+    f.write('++++++++++++++++++++++++++++\n\r')
+    f.write('   length  w/o Ext Bars     \n\r')
+    f.write('++++++++++++++++++++++++++++\n\r')
+    f.write(max_var_length_noExtBars)
+    f.write('\n\r') 
+    f.write(max_length_noExtBars)
     f.write('\n\r') 
     f.write('++++++++++++++++++++++++++++\n\r')
     f.write('         Width              \n\r')
@@ -2021,10 +1703,3 @@ with open(run+str('_ARRAY')+barcode+str('_')+tag+'_output.txt','w') as f:
     print('++++++++++++++++++++++++++++++')
     print('Execution Time: ', stop - start)
     print('++++++++++++++++++++++++++++++')
-  
-
-
-
-
-
-
